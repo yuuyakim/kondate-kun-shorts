@@ -1,0 +1,21 @@
+{
+  "name": "kondate-kun-shorts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "献立くんの縦型ショート動画をコードで作る",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render WeeklyMemo out/weekly-memo.mp4",
+    "still": "remotion still WeeklyMemo out/still.png"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.373",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.373"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.2",
+    "typescript": "5.9.3"
+  }
+}
