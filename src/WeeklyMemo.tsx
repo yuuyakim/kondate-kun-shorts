@@ -9,6 +9,7 @@ import {
   totalOccurrences,
   week,
 } from "./data/week-01";
+import { FREE_LINE, PREMIUM_LINE, product } from "./data/product";
 
 /* ============================================================
    構成（秒）
@@ -441,11 +442,16 @@ const Cart: React.FC = () => {
 };
 
 // ---------------------------------------------------------------- 6. 締め
+//
+// 3秒しかないので、覚えて帰ってもらうものを1つに絞る = URL。
+// 菜の花のピルはここだけに使い、視線が最後にURLへ落ちるようにする。
+// 価格はその下に小さく置く。無料で試せることを先に見せてから、
+// 有料の範囲を隠さずに書く。
 const Ending: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const pop = spring({
-    frame: frame - sec(12.9),
+    frame: frame - sec(12.4),
     fps,
     config: { damping: 10, mass: 0.45 },
   });
@@ -453,7 +459,7 @@ const Ending: React.FC = () => {
   return (
     <AbsoluteFill
       style={{
-        opacity: prog(frame, 12.0, 0.55),
+        opacity: prog(frame, 11.6, 0.55),
         background: `linear-gradient(180deg, rgba(16,24,40,0) 0%, rgba(16,24,40,.97) 26%, ${color.yoru} 55%)`,
         display: "flex",
         flexDirection: "column",
@@ -468,38 +474,54 @@ const Ending: React.FC = () => {
           fontWeight: 700,
           color: "#fff",
           letterSpacing: ".06em",
-          ...rise(frame, 12.25),
+          ...rise(frame, 11.85),
         }}
       >
         献立<span style={{ color: color.nanohana }}>くん</span>
       </div>
       <div
         style={{
-          marginTop: 34,
+          marginTop: 30,
           fontFamily: font.util,
-          fontSize: 42,
+          fontSize: 40,
           color: color.asagi,
-          letterSpacing: ".1em",
-          ...rise(frame, 12.55),
+          letterSpacing: ".08em",
+          ...rise(frame, 12.1),
         }}
       >
         献立{MENU_MASTER_COUNT}種から、重複なしで1週間
       </div>
+
+      {/* 最後に視線が落ちる場所。ここだけ菜の花を使う */}
       <div
         style={{
-          marginTop: 64,
+          marginTop: 58,
           fontFamily: font.display,
           fontWeight: 900,
-          fontSize: 46,
+          fontSize: 52,
           color: color.yoru,
           background: color.nanohana,
           borderRadius: 999,
-          padding: "26px 58px",
+          padding: "26px 54px",
+          letterSpacing: ".01em",
           opacity: pop,
           transform: `scale(${pop})`,
         }}
       >
-        1食分の提案は、ずっと無料
+        {product.url}
+      </div>
+
+      <div
+        style={{
+          marginTop: 34,
+          fontFamily: font.util,
+          fontSize: 32,
+          color: color.asagi,
+          letterSpacing: ".06em",
+          ...rise(frame, 12.75, 24),
+        }}
+      >
+        {FREE_LINE}　/　{PREMIUM_LINE}
       </div>
     </AbsoluteFill>
   );
