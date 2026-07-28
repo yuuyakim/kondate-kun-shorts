@@ -1,0 +1,11 @@
+# コマ送り確認で書き出したPNG
+out/
+*.png
+
+# 録画したもの
+*.mp4
+*.mkv
+
+node_modules/
+.DS_Store
+Thumbs.db

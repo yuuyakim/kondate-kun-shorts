@@ -1,0 +1,287 @@
+<title>献立くん ショート動画 試作01</title>
+
+<style>
+  /* ============================================================
+     献立くん / 縦型ショート 15秒  試作01
+     コンセプト: 冷蔵庫に貼ったメモが、夕方の台所で1行ずつ埋まっていく
+     ============================================================ */
+
+  :root{
+    --yoru:      #101828;  /* 夜の台所 */
+    --ai:        #1B2E4A;  /* 藍 */
+    --nanohana:  #FFC93C;  /* 菜の花 — 唯一のアクセント */
+    --kinari:    #FAF6EC;  /* メモの紙 */
+    --sumi:      #1F2530;  /* 紙上の文字 */
+    --asagi:     #86A9C4;  /* 弱い情報 */
+
+    --fd: "Noto Sans JP Black","Noto Sans JP","游ゴシック",sans-serif;      /* 焦り */
+    --fm: "UD デジタル 教科書体 NP","UD デジタル 教科書体 N",serif;          /* 手書きの献立表 */
+    --fu: "BIZ UDPゴシック","BIZ UDPGothic","Yu Gothic UI",sans-serif;      /* ラベル・数字 */
+  }
+
+  html,body{margin:0;height:100%;background:#05080f;overflow:hidden;
+            font-family:var(--fu);-webkit-font-smoothing:antialiased}
+
+  /* ---------- 撮影ステージ ---------- */
+  #wrap{position:fixed;inset:0;display:grid;place-items:center}
+  #stage{
+    width:1080px;height:1920px;position:relative;overflow:hidden;
+    transform-origin:center center;
+    background:
+      radial-gradient(120% 70% at 50% 8%,  #24405f 0%, transparent 60%),
+      radial-gradient(90% 50% at 50% 100%, #16233a 0%, transparent 70%),
+      var(--yoru);
+  }
+  /* 夕方の窓明かりの粒子感 */
+  #stage::after{
+    content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:radial-gradient(rgba(255,255,255,.055) 1px,transparent 1px);
+    background-size:3px 3px;
+  }
+
+  /* セーフエリア (TikTok/IGのUIを避ける) */
+  .safe{position:absolute;left:90px;right:90px;top:240px;bottom:360px}
+  #guides{position:absolute;inset:0;pointer-events:none;display:none;z-index:99}
+  #guides.on{display:block}
+  #guides i{position:absolute;border:2px dashed rgba(255,201,60,.45)}
+  #guides i.a{left:90px;right:90px;top:240px;bottom:360px}
+
+  .beat{position:absolute;inset:0;opacity:0}
+
+  /* ============ BEAT 1 : フック (0.0-2.4s) ============ */
+  #hook{display:grid;align-content:center;justify-items:center;padding:0 20px;
+        animation:hookIn .5s ease-out both, hookOut .45s ease-in 2.15s both}
+  @keyframes hookIn {from{opacity:0}to{opacity:1}}
+  @keyframes hookOut{from{opacity:1;transform:translateY(0) scale(1)}
+                       to{opacity:0;transform:translateY(-46px) scale(.94)}}
+
+  #hook .l1,#hook .l2{font-family:var(--fd);font-weight:900;font-size:96px;line-height:1.3;
+            color:#fff;letter-spacing:.005em;text-align:center;white-space:nowrap}
+  #hook .l1{animation:rise .62s cubic-bezier(.2,.9,.25,1) .08s both}
+  #hook .l2{margin-top:10px;animation:rise .62s cubic-bezier(.2,.9,.25,1) .30s both}
+  #hook .num{color:var(--nanohana);position:relative;white-space:nowrap}
+  /* 「10分」の下線が引かれる */
+  #hook .num::after{content:"";position:absolute;left:-6px;right:-6px;bottom:-16px;height:9px;
+                    border-radius:6px;background:var(--nanohana);transform-origin:left center;
+                    animation:swipe .5s cubic-bezier(.3,.9,.3,1) .95s both}
+  @keyframes rise {from{opacity:0;transform:translateY(38px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes swipe{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+  #hook .sub{margin-top:74px;font-size:38px;letter-spacing:.16em;color:var(--asagi);
+             animation:rise .6s ease-out 1.35s both}
+
+  /* ============ BEAT 2-4 : メモ (2.4s-) ============ */
+  #memo{animation:show 0s linear 2.40s both}
+  @keyframes show{from{opacity:0}to{opacity:1}}
+
+  /* 紙 */
+  .paper{
+    position:absolute;left:90px;top:300px;width:900px;
+    background:var(--kinari);border-radius:4px;
+    padding:64px 62px 58px;box-sizing:border-box;
+    box-shadow:0 44px 90px rgba(0,0,0,.55), 0 6px 0 rgba(0,0,0,.18);
+    /* 下端がわずかにたわむ */
+    clip-path:polygon(0 0,100% 0,100% calc(100% - 14px),50% 100%,0 calc(100% - 14px));
+    animation:drop .62s cubic-bezier(.18,1.5,.42,1) 2.40s both;
+  }
+  @keyframes drop{
+    0%  {opacity:0;transform:translateY(-190px) rotate(-1.4deg)}
+    70% {opacity:1}
+    100%{opacity:1;transform:translateY(0) rotate(-.5deg)}
+  }
+  /* マグネット2つ */
+  .mag{position:absolute;top:-20px;width:52px;height:52px;border-radius:50%;
+       background:radial-gradient(circle at 34% 30%,#ff8f6b,#c9452a 70%);
+       box-shadow:0 8px 18px rgba(0,0,0,.5);
+       animation:magIn .4s ease-out 2.86s both}
+  .mag.l{left:96px} .mag.r{right:96px;
+       background:radial-gradient(circle at 34% 30%,#8fd6e6,#2b7f99 70%)}
+  @keyframes magIn{from{opacity:0;transform:scale(0) translateY(-24px)}to{opacity:1;transform:scale(1)}}
+
+  /* レターヘッド = ブランド。タイトルカードを作らず、12秒間ずっと画面にいる */
+  .head{display:flex;align-items:baseline;justify-content:space-between;
+        border-bottom:3px solid rgba(31,37,48,.16);padding-bottom:26px;margin-bottom:12px}
+  .head .brand{font-family:var(--fm);font-size:52px;font-weight:700;color:var(--sumi);letter-spacing:.04em}
+  .head .brand em{font-style:normal;color:#C9452A}
+  .head .tag{font-size:26px;color:#8a8578;letter-spacing:.1em}
+
+  /* 献立の行 */
+  .row{display:flex;align-items:center;gap:32px;padding:19px 0;
+       border-bottom:2px solid rgba(31,37,48,.09)}
+  .row .day{font-family:var(--fu);font-size:34px;font-weight:700;color:#fff;
+            background:var(--ai);width:64px;height:64px;flex:none;border-radius:14px;
+            display:grid;place-items:center}
+  .row .dish{font-family:var(--fm);font-size:56px;font-weight:700;color:var(--sumi);
+             letter-spacing:.02em;white-space:nowrap}
+  .row .gen{margin-left:auto;font-size:25px;color:#a09a8c;letter-spacing:.08em;flex:none}
+
+  /* ペンで書かれるように左からワイプ */
+  .row .dish,.row .gen{clip-path:inset(0 100% 0 0)}
+  .row .day{opacity:0;transform:scale(.7)}
+  .row.w .day {animation:dayIn .26s cubic-bezier(.2,1.6,.4,1) var(--d) both}
+  .row.w .dish{animation:write .40s cubic-bezier(.35,.6,.2,1) var(--d) both}
+  .row.w .gen {animation:write .30s ease-out calc(var(--d) + .12s) both}
+  @keyframes dayIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+  @keyframes write{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+
+  /* 中打ち: 「7日分、10秒で。」 */
+  #punch{position:absolute;left:90px;right:90px;top:1330px;text-align:center;
+         animation:punchIn .5s cubic-bezier(.2,.9,.25,1) 6.35s both,
+                   fadeOut .4s ease-in 7.55s both}
+  #punch b{font-family:var(--fd);font-weight:900;font-size:76px;color:#fff;letter-spacing:.02em}
+  #punch b i{font-style:normal;color:var(--nanohana)}
+  @keyframes punchIn{from{opacity:0;transform:translateY(34px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeOut{from{opacity:1}to{opacity:0}}
+
+  /* ============ BEAT 5 : 買い物リスト (7.6-12.0s) ============ */
+  #cart{position:absolute;left:90px;top:980px;width:900px;box-sizing:border-box;
+        background:var(--kinari);border-radius:4px;padding:52px 56px 46px;
+        box-shadow:0 -30px 80px rgba(0,0,0,.6);
+        animation:cartIn .55s cubic-bezier(.2,.9,.25,1) 7.60s both}
+  @keyframes cartIn{from{opacity:0;transform:translateY(240px) rotate(1.2deg)}
+                      to{opacity:1;transform:translateY(0) rotate(.5deg)}}
+
+  #cart .ttl{font-family:var(--fm);font-size:44px;font-weight:700;color:var(--sumi);
+             border-bottom:3px solid rgba(31,37,48,.16);padding-bottom:22px;margin-bottom:26px}
+
+  /* 延べ31品 → 22品 */
+  .count{display:flex;align-items:center;gap:26px;margin-bottom:30px}
+  .count .n{font-family:var(--fd);font-weight:900;font-size:96px;line-height:1;color:var(--sumi)}
+  .count .n.was{color:#bdb6a6;position:relative}
+  .count .n.was::after{content:"";position:absolute;left:-8px;right:-8px;top:52%;height:8px;
+                       background:#C9452A;border-radius:5px;transform-origin:left center;
+                       animation:swipe .34s ease-out 8.55s both}
+  .count .ar{font-size:52px;color:#bdb6a6;animation:show 0s linear 8.75s both}
+  .count .n.now{color:#C9452A;animation:pop .42s cubic-bezier(.2,1.7,.4,1) 8.90s both}
+  .count .u{font-size:30px;color:#8a8578;align-self:flex-end;margin-bottom:14px}
+  @keyframes pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+
+  .item{display:flex;align-items:center;gap:22px;padding:15px 0;
+        border-bottom:2px solid rgba(31,37,48,.09);
+        animation:itemIn .34s ease-out var(--d) both}
+  @keyframes itemIn{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:translateX(0)}}
+  .item .box{width:38px;height:38px;flex:none;border:3px solid var(--sumi);border-radius:7px}
+  .item .nm{font-family:var(--fm);font-size:46px;font-weight:700;color:var(--sumi)}
+  .item .x {margin-left:auto;font-family:var(--fu);font-size:31px;font-weight:700;
+            color:#fff;background:#C9452A;border-radius:999px;padding:9px 22px;flex:none}
+  .item .x.q{background:var(--ai)}
+
+  /* ============ BEAT 6 : 締め (12.0-15.0s) ============ */
+  #end{display:grid;align-content:center;justify-items:center;
+       background:linear-gradient(180deg,rgba(16,24,40,0) 0%,rgba(16,24,40,.97) 26%,var(--yoru) 55%);
+       animation:show .55s ease-out 12.00s both}
+  #end .lg{font-family:var(--fm);font-size:120px;font-weight:700;color:#fff;letter-spacing:.06em;
+           animation:rise .6s cubic-bezier(.2,.9,.25,1) 12.25s both}
+  #end .lg em{font-style:normal;color:var(--nanohana)}
+  #end .cp{margin-top:34px;font-size:42px;color:var(--asagi);letter-spacing:.1em;
+           animation:rise .6s ease-out 12.55s both}
+  #end .free{margin-top:64px;font-family:var(--fd);font-weight:900;font-size:46px;color:var(--yoru);
+             background:var(--nanohana);border-radius:999px;padding:26px 58px;
+             animation:pop .5s cubic-bezier(.2,1.6,.4,1) 12.90s both}
+
+  /* ---------- 撮影用UI (録画には映さない) ---------- */
+  #ui{position:fixed;left:20px;bottom:20px;z-index:100;display:flex;gap:10px;align-items:center;
+      font-size:13px;color:#93a4bd}
+  #ui button{font:inherit;color:#0f1622;background:var(--nanohana);border:0;border-radius:8px;
+             padding:9px 16px;cursor:pointer;font-weight:700}
+  #ui .sec{background:#1d2941;color:#c8d6ea}
+  #ui.hide{display:none}
+</style>
+
+<div id="wrap">
+  <div id="stage">
+
+    <!-- 1. フック -->
+    <div class="beat safe" id="hook">
+      <div class="l1">「今日なに作る」に、</div>
+      <div class="l2">毎晩<span class="num">10分</span>。</div>
+      <!-- 1行8文字前後に収める。これ以上増やすと96pxで収まらない -->
+
+      <div class="sub">共働き・平日の夕方</div>
+    </div>
+
+    <!-- 2-4. 冷蔵庫のメモ -->
+    <div class="beat" id="memo">
+      <div class="paper">
+        <div class="mag l"></div><div class="mag r"></div>
+        <div class="head">
+          <div class="brand">献立<em>くん</em></div>
+          <div class="tag">今週のこんだて</div>
+        </div>
+        <div class="row w" style="--d:3.00s"><div class="day">月</div><div class="dish">豚の生姜焼き</div><div class="gen">和食</div></div>
+        <div class="row w" style="--d:3.42s"><div class="day">火</div><div class="dish">麻婆豆腐</div><div class="gen">中華</div></div>
+        <div class="row w" style="--d:3.84s"><div class="day">水</div><div class="dish">ハンバーグ</div><div class="gen">洋食</div></div>
+        <div class="row w" style="--d:4.26s"><div class="day">木</div><div class="dish">鮭の塩焼き</div><div class="gen">和食</div></div>
+        <div class="row w" style="--d:4.68s"><div class="day">金</div><div class="dish">鶏の唐揚げ</div><div class="gen">和食</div></div>
+        <div class="row w" style="--d:5.10s"><div class="day">土</div><div class="dish">カレーライス</div><div class="gen">洋食</div></div>
+        <div class="row w" style="--d:5.52s"><div class="day">日</div><div class="dish">肉じゃが</div><div class="gen">和食</div></div>
+      </div>
+
+      <div id="punch"><b>7日分、<i>10秒</i>で。</b></div>
+
+      <!-- 5. 買い物リスト -->
+      <div id="cart">
+        <div class="ttl">買い物リスト</div>
+        <div class="count">
+          <span class="n was">31</span>
+          <span class="ar">→</span>
+          <span class="n now">22</span>
+          <span class="u">品にまとまる</span>
+        </div>
+        <div class="item" style="--d:9.30s"><span class="box"></span><span class="nm">玉ねぎ</span><span class="x">4献立</span></div>
+        <div class="item" style="--d:9.55s"><span class="box"></span><span class="nm">生姜</span><span class="x">3献立</span></div>
+        <div class="item" style="--d:9.80s"><span class="box"></span><span class="nm">にんじん</span><span class="x q">2献立</span></div>
+        <div class="item" style="--d:10.05s"><span class="box"></span><span class="nm">じゃがいも</span><span class="x q">2献立</span></div>
+      </div>
+    </div>
+
+    <!-- 6. 締め -->
+    <div class="beat safe" id="end">
+      <div class="lg">献立<em>くん</em></div>
+      <div class="cp">献立380種から、重複なしで1週間</div>
+      <div class="free">1食分の提案は、ずっと無料</div>
+    </div>
+
+    <div id="guides"><i class="a"></i></div>
+  </div>
+</div>
+
+<div id="ui">
+  <button id="replay">▶ 最初から (R)</button>
+  <button class="sec" id="g">セーフエリア (G)</button>
+  <button class="sec" id="z">原寸 1080×1920 (Z)</button>
+  <span id="st">15.0s / ループなし</span>
+</div>
+
+<script>
+  const stage = document.getElementById('stage');
+  const wrap  = document.getElementById('wrap');
+  let native = false;
+
+  function fit(){
+    if(native){ stage.style.transform = 'scale(1)'; wrap.style.overflow='auto'; return; }
+    wrap.style.overflow='hidden';
+    const s = Math.min(innerWidth/1080, innerHeight/1920) * 0.94;
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  addEventListener('resize', fit); fit();
+
+  // アニメーションを頭から流し直す
+  function replay(){
+    const c = stage.cloneNode(true);
+    stage.parentNode.replaceChild(c, stage);
+    window.stage = c;
+    location.reload();
+  }
+  document.getElementById('replay').onclick = () => location.reload();
+  document.getElementById('g').onclick = () => document.getElementById('guides').classList.toggle('on');
+  document.getElementById('z').onclick = () => { native = !native; fit(); };
+
+  addEventListener('keydown', e => {
+    const k = e.key.toLowerCase();
+    if(k === 'r') location.reload();
+    if(k === 'g') document.getElementById('guides').classList.toggle('on');
+    if(k === 'z'){ native = !native; fit(); }
+    if(k === 'h') document.getElementById('ui').classList.toggle('hide');  // 録画前にUIを消す
+  });
+</script>
